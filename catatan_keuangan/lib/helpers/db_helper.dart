@@ -26,6 +26,17 @@ class DBHelper {
             FOREIGN KEY (categoryId) REFERENCES categories(id)
           )
         ''');
+        await db.execute('''
+          CREATE TABLE users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            password TEXT NOT NULL
+          )
+        ''');
+        await db.insert("users", {
+          "email": "admin@gmail.com",
+          "password": "admin123",
+        });
       },
       version: 1,
     );
@@ -73,5 +84,20 @@ class DBHelper {
   static Future<void> deleteCategory(int id) async {
     final db = await database();
     await db.delete('categories', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<int> insertUser(String email, String password) async {
+    final db = await database();
+    return db.insert("users", {"email": email, "password": password});
+  }
+
+  static Future<bool> checkUser(String email, String password) async {
+    final db = await database();
+    final result = await db.query(
+      "users",
+      where: "email = ? AND password = ?",
+      whereArgs: [email, password],
+    );
+    return result.isNotEmpty;
   }
 }
