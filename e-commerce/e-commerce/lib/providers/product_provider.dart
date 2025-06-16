@@ -79,4 +79,18 @@ class ProductProvider with ChangeNotifier {
     await _saveProductsToPrefs();
     notifyListeners();
   }
+
+  List<Product> get featuredProducts {
+    List<Product> sorted = List.from(_products);
+
+    sorted.sort((a, b) {
+      if (b.rating.compareTo(a.rating) != 0) {
+        return b.rating.compareTo(a.rating);
+      } else {
+        return b.sales.compareTo(a.sales);
+      }
+    });
+
+    return sorted.take(3).toList();
+  }
 }

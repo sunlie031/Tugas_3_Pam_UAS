@@ -24,8 +24,21 @@ class _HomeScreenState extends State<HomeScreen> {
   OverlayEntry? _searchOverlay;
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
-
   final List<String> adsImages = ["asset/ads_1.png", "asset/ads_2.png"];
+
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const Placeholder(),
+    const Center(child: Text("Riwayat")),
+    ProfileScreen(),
+  ];
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -142,10 +155,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       focusNode: _focusNode,
                       controller: _searchController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Cari produk...',
                         border: InputBorder.none,
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
                       ),
                       onChanged: _showSearchOverlay,
                     ),
@@ -171,7 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black,
+            ),
             onPressed: () {
               setState(() {
                 _isSearching = !_isSearching;
@@ -184,16 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -201,63 +208,209 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+          const SizedBox(width: 16),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 180,
-            color: Colors.grey[200],
-            child: PageView.builder(
-              controller: _adsController,
-              itemCount: adsImages.length,
-              itemBuilder: (context, index) {
-                return Image.asset(
-                  adsImages[index],
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Consumer<ProductProvider>(
-              builder: (context, productProvider, _) {
-                final products = productProvider.products;
+      body:
+          _currentIndex == 0
+              ? Consumer<ProductProvider>(
+                builder: (context, productProvider, _) {
+                  final allProducts = productProvider.products;
+                  final featured = productProvider.featuredProducts;
 
-                if (products.isEmpty) {
-                  return const Center(
-                    child: Text("Tidak ada produk tersedia."),
-                  );
-                }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(12),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 0.65,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => ProductDetail(product: products[index]),
+                  return ListView(
+                    children: [
+                      SizedBox(
+                        height: 180,
+                        child: PageView.builder(
+                          controller: _adsController,
+                          itemCount: adsImages.length,
+                          itemBuilder: (context, index) {
+                            return Image.asset(
+                              adsImages[index],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (featured.isNotEmpty) ...[
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Center(
+                            child: Text(
+                              "Produk Unggulan",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        );
-                      },
-                      child: ProductCard(product: products[index]),
-                    );
-                  },
-                );
-              },
-            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 300,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            itemCount: featured.length,
+                            itemBuilder: (context, index) {
+                              final product = featured[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) =>
+                                              ProductDetail(product: product),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 150,
+                                  margin: const EdgeInsets.only(right: 12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                              top: Radius.circular(12),
+                                            ),
+                                        child: Image.network(
+                                          product.image,
+                                          height: 200,
+                                          width: 150,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          product.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        child: Text(
+                                          "Rp ${product.price.toStringAsFixed(0)}",
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                              size: 14,
+                                            ),
+                                            Text(
+                                              "(${product.rating}) ${product.sales}",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Center(
+                          child: Text(
+                            "Semua Produk",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GridView.builder(
+                        padding: const EdgeInsets.all(12),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: 0.65,
+                            ),
+                        itemCount: allProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = allProducts[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => ProductDetail(product: product),
+                                ),
+                              );
+                            },
+                            child: ProductCard(product: product),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              )
+              : _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 2, 2, 2),
+        selectedFontSize: 12,
+        unselectedFontSize: 10,
+        unselectedIconTheme: IconThemeData(size: 16),
+        selectedIconTheme: IconThemeData(size: 20),
+        onTap: _onTap,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Beranda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history, color: Colors.black),
+            label: 'Riwayat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profil',
           ),
         ],
       ),

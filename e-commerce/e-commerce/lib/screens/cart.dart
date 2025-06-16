@@ -1,17 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/product_provider.dart';
+import '../screens/product_detail.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  late TextEditingController _searchController;
+  late FocusNode _focusNode;
+  OverlayEntry? _searchOverlay;
+  bool _isSearching = false;
+  final LayerLink _layerLink = LayerLink();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    _searchOverlay?.remove();
+    super.dispose();
+  }
+
+  void _showSearchOverlay(String keyword) {
+    _hideSearchOverlay();
+
+    final provider = Provider.of<ProductProvider>(context, listen: false);
+    final results =
+        provider.products
+            .where((p) => p.name.toLowerCase().contains(keyword.toLowerCase()))
+            .toList();
+
+    if (results.isEmpty || keyword.isEmpty) return;
+
+    _searchOverlay = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          width: MediaQuery.of(context).size.width - 32,
+          top: kToolbarHeight + 12,
+          left: 16,
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(8),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                shrinkWrap: true,
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  final product = results[index];
+                  return ListTile(
+                    leading: Image.network(
+                      product.image,
+                      width: 40,
+                      height: 40,
+                    ),
+                    title: Text(product.name),
+                    onTap: () {
+                      _hideSearchOverlay();
+                      _searchController.clear();
+                      setState(() => _isSearching = false);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductDetail(product: product),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(_searchOverlay!);
+  }
+
+  void _hideSearchOverlay() {
+    _searchOverlay?.remove();
+    _searchOverlay = null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.items;
 
+    double total = 0;
+    for (var item in cartItems) {
+      total += item.product.price * item.quantity;
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Keranjang')),
+      appBar: AppBar(
+        title:
+            _isSearching
+                ? CompositedTransformTarget(
+                  link: _layerLink,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      focusNode: _focusNode,
+                      decoration: const InputDecoration(
+                        hintText: 'Cari produk...',
+                        border: InputBorder.none,
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
+                      ),
+                      onChanged: _showSearchOverlay,
+                    ),
+                  ),
+                )
+                : const Text("Keranjang", style: TextStyle(fontSize: 18)),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+              });
+              if (_isSearching) {
+                FocusScope.of(context).requestFocus(_focusNode);
+              } else {
+                _hideSearchOverlay();
+              }
+            },
+          ),
+        ],
+      ),
       body:
           cartItems.isEmpty
               ? const Center(
@@ -23,42 +163,111 @@ class CartScreen extends StatelessWidget {
               : Column(
                 children: [
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: cartItems.length,
+                      separatorBuilder:
+                          (context, index) => const Divider(
+                            thickness: 1,
+                            indent: 16,
+                            endIndent: 16,
+                          ),
                       itemBuilder: (context, index) {
                         final item = cartItems[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 8,
                           ),
-                          child: ListTile(
-                            leading: Image.network(
-                              item.product.image,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                            title: Text(item.product.name),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Harga: Rp ${item.product.price.toStringAsFixed(0)}',
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  item.product.image,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
                                 ),
-                                Text(
-                                  'Subtotal: Rp ${(item.product.price * item.quantity).toStringAsFixed(0)}',
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.product.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Harga: Rp ${item.product.price.toStringAsFixed(0)}',
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            trailing: Text('x${item.quantity}'),
+                              ),
+                              Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                        ),
+                                        onPressed: () {
+                                          if (item.quantity > 1) {
+                                            cartProvider.updateQuantity(
+                                              item.product.id,
+                                              item.quantity - 1,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      Text(
+                                        '${item.quantity}',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                        ),
+                                        onPressed: () {
+                                          cartProvider.updateQuantity(
+                                            item.product.id,
+                                            item.quantity + 1,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      cartProvider.removeFromCart(
+                                        item.product.id,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         );
                       },
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       border: const Border(top: BorderSide(color: Colors.grey)),
@@ -69,8 +278,16 @@ class CartScreen extends StatelessWidget {
                         const Text(
                           'Total:',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Rp ${total.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0),
                           ),
                         ),
                       ],

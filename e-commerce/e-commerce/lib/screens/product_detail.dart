@@ -1,3 +1,4 @@
+import 'package:catatan_keuangan/screens/chekout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class _ProductDetailState extends State<ProductDetail> {
   OverlayEntry? _searchOverlay;
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
+  int quantity = 1;
 
   @override
   void initState() {
@@ -128,7 +130,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       decoration: const InputDecoration(
                         hintText: 'Cari produk...',
                         border: InputBorder.none,
-                        prefixIcon: Icon(Icons.search),
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
                       ),
                       onChanged: _showSearchOverlay,
                     ),
@@ -137,7 +139,10 @@ class _ProductDetailState extends State<ProductDetail> {
                 : const Text("Detail", style: TextStyle(fontSize: 18)),
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black,
+            ),
             onPressed: () {
               setState(() {
                 _isSearching = !_isSearching;
@@ -150,7 +155,7 @@ class _ProductDetailState extends State<ProductDetail> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -168,12 +173,12 @@ class _ProductDetailState extends State<ProductDetail> {
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
                 displayedImage,
-                height: 300,
+                height: 270,
                 width: double.infinity,
                 fit: BoxFit.contain,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             if (images.length > 1)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -215,25 +220,60 @@ class _ProductDetailState extends State<ProductDetail> {
                       }).toList(),
                 ),
               ),
-            const SizedBox(height: 24),
-            Text(
-              product.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            const SizedBox(height: 8),
+            Text(product.name, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text(
               "Rp ${product.price.toStringAsFixed(0)}",
-              style: const TextStyle(fontSize: 18, color: Colors.black54),
+              style: const TextStyle(
+                fontSize: 24,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               "Stok: ${product.stock}",
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.star, color: Colors.amber),
+                Text(
+                  "(${product.rating.toString()})",
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Text("Jumlah:", style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () {
+                    if (quantity > 1) {
+                      setState(() => quantity--);
+                    }
+                  },
+                  icon: const Icon(Icons.indeterminate_check_box_outlined),
+                ),
+                Text('$quantity', style: const TextStyle(fontSize: 14)),
+                IconButton(
+                  onPressed: () {
+                    if (quantity < product.stock) {
+                      setState(() => quantity++);
+                    }
+                  },
+                  icon: const Icon(Icons.add_box_outlined),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Text(
               product.description,
-              style: const TextStyle(fontSize: 16, height: 1.4),
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ),
           ],
         ),
@@ -245,16 +285,18 @@ class _ProductDetailState extends State<ProductDetail> {
             Expanded(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                 ),
-                icon: const Icon(Icons.add_shopping_cart),
-                label: const Text("+ Keranjang"),
+                label: const Text(
+                  "+ Keranjang",
+                  style: TextStyle(color: Colors.black),
+                ),
+                icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
                 onPressed: () {
                   Provider.of<CartProvider>(
                     context,
                     listen: false,
-                  ).addToCart(widget.product);
+                  ).addToCart(widget.product, quantity: quantity);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Produk ditambahkan ke keranjang"),
@@ -266,23 +308,22 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                icon: const Icon(Icons.payment),
-                label: const Text("Checkout"),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 onPressed: () {
                   Provider.of<CartProvider>(
                     context,
                     listen: false,
-                  ).addToCart(widget.product);
+                  ).addToCart(widget.product, quantity: quantity);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const CartScreen()),
+                    MaterialPageRoute(builder: (_) => const CheckoutScreen()),
                   );
                 },
+                child: const Text(
+                  "Checkout",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],

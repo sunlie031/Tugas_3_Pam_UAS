@@ -3,6 +3,8 @@ class Product {
   final String name;
   final double price;
   int stock;
+  final double rating;
+  int sales;
   final String description;
   final String image;
   final List<String> subImage;
@@ -12,6 +14,8 @@ class Product {
     required this.name,
     required this.price,
     required this.stock,
+    required this.rating,
+    required this.sales,
     required this.description,
     required this.image,
     required this.subImage,
@@ -22,6 +26,8 @@ class Product {
     'name': name,
     'price': price,
     "stock": stock,
+    "rating": rating,
+    "sales": sales,
     'description': description,
     "image": image,
     "subImage": subImage,
@@ -32,6 +38,8 @@ class Product {
     name: map['name'],
     price: (map['price'] as num).toDouble(),
     stock: map["stock"],
+    rating: map["rating"],
+    sales: map["sales"],
     description: map['description'],
     image: map["image"],
     subImage: List<String>.from(map["subImage"] ?? []),
@@ -44,7 +52,10 @@ final List<Product> dummyProducts = [
     name: 'Kaos Polos',
     price: 50000,
     stock: 20,
-    description: 'Kaos katun nyaman dipakai sehari-hari.',
+    rating: 4.3,
+    sales: 120,
+    description:
+        'Kaos polos berbahan katun premium yang lembut dan adem, cocok digunakan sehari-hari baik di dalam maupun luar rumah. Desain minimalis dengan jahitan rapi, cocok untuk pria maupun wanita. Tersedia dalam berbagai warna netral yang mudah dipadukan dengan outfit lainnya.',
     image:
         'https://down-id.img.susercontent.com/file/id-11134207-7r992-lxbemuqxv7z25a.webp',
     subImage: [
@@ -57,9 +68,12 @@ final List<Product> dummyProducts = [
   Product(
     id: '2',
     name: 'Celana Jeans',
-    stock: 15,
     price: 120000,
-    description: 'Celana jeans biru slim fit untuk tampil stylish.',
+    stock: 15,
+    rating: 4.5,
+    sales: 69,
+    description:
+        'Celana jeans biru slim fit dengan bahan denim berkualitas tinggi. Nyaman dipakai seharian dan tahan lama, cocok untuk tampilan kasual hingga semi-formal. Potongan fit yang mengikuti bentuk tubuh tanpa mengurangi kenyamanan saat bergerak.',
     image:
         'https://down-id.img.susercontent.com/file/97dde8e47ca46f68495746dd808405c0',
     subImage: [
@@ -74,7 +88,10 @@ final List<Product> dummyProducts = [
     name: 'Jaket Hoodie',
     price: 150000,
     stock: 10,
-    description: 'Jaket hoodie hangat cocok untuk musim hujan.',
+    rating: 4.6,
+    sales: 86,
+    description:
+        'Jaket hoodie berbahan fleece tebal yang hangat dan lembut, ideal untuk cuaca dingin atau musim hujan. Dilengkapi dengan penutup kepala dan kantong depan yang fungsional. Desain kasual dan modis, cocok untuk aktivitas luar ruangan atau sekadar bersantai.',
     image: 'https://i.ebayimg.com/images/g/brYAAeSwUzRoFjD5/s-l960.webp',
     subImage: [
       'https://i.ebayimg.com/images/g/brYAAeSwUzRoFjD5/s-l960.webp',
@@ -88,7 +105,10 @@ final List<Product> dummyProducts = [
     name: 'Sepatu Sneakers',
     price: 250000,
     stock: 8,
-    description: 'Sepatu ringan dan nyaman untuk aktivitas harian.',
+    rating: 4.7,
+    sales: 31,
+    description:
+        'Sneakers ringan dengan sol empuk dan bahan breathable yang memberikan kenyamanan maksimal sepanjang hari. Desain trendy cocok untuk gaya kasual, olahraga ringan, atau aktivitas sehari-hari. Dilengkapi dengan sol anti-slip yang aman dan awet.',
     image:
         'https://down-id.img.susercontent.com/file/sg-11134201-7rffb-m9sa2jeauzak53@resize_w900_nl.webp',
     subImage: [
@@ -103,7 +123,10 @@ final List<Product> dummyProducts = [
     name: 'Topi Unisex',
     price: 35000,
     stock: 30,
-    description: 'Topi kasual cocok untuk jalan-jalan atau olahraga.',
+    rating: 4.4,
+    sales: 100,
+    description:
+        'Topi kasual unisex berbahan katun twill yang ringan dan nyaman dipakai. Cocok untuk olahraga, jalan-jalan, atau aktivitas outdoor lainnya. Tersedia dalam berbagai warna yang stylish dan mudah dipadupadankan dengan outfit harian Anda.',
     image:
         'https://down-id.img.susercontent.com/file/019b044ca37483d08b104bf8d8466b4d.webp',
     subImage: [
@@ -118,7 +141,10 @@ final List<Product> dummyProducts = [
     name: 'Kemeja Flanel',
     price: 100000,
     stock: 12,
-    description: 'Kemeja flanel keren dengan motif kotak-kotak.',
+    rating: 4.1,
+    sales: 45,
+    description:
+        'Kemeja flanel pria dengan motif kotak-kotak klasik dan bahan lembut yang memberikan kenyamanan ekstra. Cocok digunakan saat cuaca sejuk atau untuk tampilan layering yang kekinian. Bisa dikenakan sebagai outer maupun baju utama.',
     image:
         'https://matahari.com/cdn/shop/files/18207942_1.jpg?v=1741834663&width=720',
     subImage: [
@@ -133,7 +159,10 @@ final List<Product> dummyProducts = [
     name: 'Jam Tangan',
     price: 180000,
     stock: 6,
-    description: 'Jam tangan dengan fitur tanggal dan stopwatch.',
+    rating: 4.9,
+    sales: 25,
+    description:
+        'Jam tangan analog modern dengan fitur tambahan seperti tanggal dan stopwatch. Desain elegan dengan tali yang kuat dan nyaman di pergelangan tangan. Cocok untuk aktivitas formal maupun kasual, serta tahan terhadap percikan air.',
     image:
         'https://down-id.img.susercontent.com/file/654d6f64f8551ad90eab1248699ea856.webp',
     subImage: [
@@ -148,7 +177,10 @@ final List<Product> dummyProducts = [
     name: 'Tas Ransel',
     price: 200000,
     stock: 9,
-    description: 'Tas ransel besar cocok untuk sekolah atau kerja.',
+    rating: 4.0,
+    sales: 78,
+    description:
+        'Tas ransel berkapasitas besar dengan banyak kompartemen untuk menyimpan laptop, buku, botol minum, dan perlengkapan lainnya. Terbuat dari bahan tahan air yang awet dan ringan. Ideal untuk pelajar, pekerja kantoran, maupun traveler.',
     image:
         'https://down-id.img.susercontent.com/file/id-11134207-7r98p-lngwhfepqv9653.webp',
     subImage: [

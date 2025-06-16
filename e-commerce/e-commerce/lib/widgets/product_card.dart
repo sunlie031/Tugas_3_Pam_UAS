@@ -55,9 +55,23 @@ class ProductCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+            SizedBox(height: 8),
             Text(
               "Rp ${product.price.toStringAsFixed(0)}",
-              style: TextStyle(fontSize: 14, color: Colors.black),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              children: [
+                const Icon(Icons.star, color: Colors.amber, size: 14),
+                Text(
+                  "(${product.rating}) ${product.sales}",
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
             ),
           ],
         ),
