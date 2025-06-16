@@ -14,6 +14,7 @@ class CartDB {
   static Future<List<CartItem>> loadCartItems() async {
     final prefs = await SharedPreferences.getInstance();
     final encodedItems = prefs.getStringList(cartKey) ?? [];
+
     return encodedItems.map((e) => CartItem.fromMap(jsonDecode(e))).toList();
   }
 }

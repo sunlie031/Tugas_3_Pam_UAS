@@ -5,11 +5,28 @@ import '../models/product.dart';
 
 class ProductProvider with ChangeNotifier {
   final List<Product> _products = [];
+  final List<Product> _cart = [];
 
   List<Product> get products => [..._products];
+  List<Product> get cart => [..._cart];
 
   Product getById(String id) =>
       _products.firstWhere((product) => product.id == id);
+
+  void addToCart(Product product) {
+    _cart.add(product);
+    notifyListeners();
+  }
+
+  void removeFromCart(Product product) {
+    _cart.remove(product);
+    notifyListeners();
+  }
+
+  void clearCart() {
+    _cart.clear();
+    notifyListeners();
+  }
 
   Future<void> addProduct(Product product) async {
     _products.add(product);
