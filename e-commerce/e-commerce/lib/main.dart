@@ -1,5 +1,6 @@
 import 'package:catatan_keuangan/providers/cart_provider.dart';
 import 'package:catatan_keuangan/providers/product_provider.dart';
+import 'package:catatan_keuangan/providers/profile.provider.dart';
 import 'package:catatan_keuangan/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ void main() {
             return Provider;
           },
         ),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: const MyApp(),
     ),

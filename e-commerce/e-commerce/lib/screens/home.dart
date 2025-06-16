@@ -1,3 +1,4 @@
+import 'package:catatan_keuangan/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -180,6 +181,15 @@ class _HomeScreenState extends State<HomeScreen> {
               } else {
                 _hideSearchOverlay();
               }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+              );
             },
           ),
           IconButton(
