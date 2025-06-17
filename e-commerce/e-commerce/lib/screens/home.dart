@@ -26,7 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   OverlayEntry? _searchOverlay;
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
-  final List<String> adsImages = ["asset/ads_1.png", "asset/ads_2.png"];
+  final List<String> adsImages = [
+    "asset/ads_1.png",
+    "asset/ads_2.png",
+    "asset/ads_3.png",
+  ];
 
   int _currentIndex = 0;
 
