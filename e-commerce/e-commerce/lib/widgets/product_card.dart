@@ -1,6 +1,7 @@
-import 'package:catatan_keuangan/screens/product_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/product.dart';
+import '../screens/product_detail.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -9,6 +10,12 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -31,34 +38,31 @@ class ProductCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child:
-                      product.image.startsWith("http")
-                          ? Image.network(
-                            product.image,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          )
-                          : Image.asset(
-                            product.image,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                ),
+                child:
+                    product.image.startsWith("http")
+                        ? Image.network(
+                          product.image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                        : Image.asset(
+                          product.image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               product.name,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              "Rp ${product.price.toStringAsFixed(0)}",
-              style: TextStyle(
+              formatCurrency.format(product.price),
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -69,7 +73,7 @@ class ProductCard extends StatelessWidget {
                 const Icon(Icons.star, color: Colors.amber, size: 14),
                 Text(
                   "(${product.rating}) ${product.sales}",
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),

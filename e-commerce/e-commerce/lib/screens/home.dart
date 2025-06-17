@@ -2,6 +2,7 @@ import 'package:catatan_keuangan/screens/history.dart';
 import 'package:catatan_keuangan/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 
 import '../providers/product_provider.dart';
@@ -34,6 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
     const HistoryScreen(),
     ProfileScreen(),
   ];
+
+  final formatCurrency = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
 
   void _onTap(int index) {
     setState(() {
@@ -313,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           horizontal: 8,
                                         ),
                                         child: Text(
-                                          "Rp ${product.price.toStringAsFixed(0)}",
+                                          formatCurrency.format(product.price),
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold,

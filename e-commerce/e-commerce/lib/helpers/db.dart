@@ -8,13 +8,25 @@ class CartDB {
   static Future<void> saveCartItems(List<CartItem> items) async {
     final prefs = await SharedPreferences.getInstance();
     final encodedItems = items.map((item) => jsonEncode(item.toMap())).toList();
+
     await prefs.setStringList(cartKey, encodedItems);
+
+    print('Cart disimpan: ${encodedItems.length} item');
   }
 
   static Future<List<CartItem>> loadCartItems() async {
     final prefs = await SharedPreferences.getInstance();
-    final encodedItems = prefs.getStringList(cartKey) ?? [];
+    final encodedItems = prefs.getStringList(cartKey);
 
-    return encodedItems.map((e) => CartItem.fromMap(jsonDecode(e))).toList();
+    if (encodedItems == null || encodedItems.isEmpty) {
+      print('Tidak ada data cart ditemukan di storage.');
+      return [];
+    }
+
+    final items =
+        encodedItems.map((e) => CartItem.fromMap(jsonDecode(e))).toList();
+    print('Cart dimuat dari storage: ${items.length} item');
+
+    return items;
   }
 }

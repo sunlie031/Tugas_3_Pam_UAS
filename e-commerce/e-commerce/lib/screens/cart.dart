@@ -354,7 +354,13 @@ class _CartScreenState extends State<CartScreen> {
                               );
 
                               for (var item in selectedItems) {
-                                cartProvider.removeFromCart(item.product.id);
+                                await productProvider.updateStockAndSales(
+                                  item.product.id,
+                                  item.quantity,
+                                );
+                                await cartProvider.removeFromCart(
+                                  item.product.id,
+                                );
                               }
 
                               selectedProductIds.clear();
