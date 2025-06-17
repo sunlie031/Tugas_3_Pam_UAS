@@ -5,6 +5,7 @@ import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
 import '../providers/checkout_provider.dart';
 import '../screens/product_detail.dart';
+import 'package:intl/intl.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -20,6 +21,12 @@ class _CartScreenState extends State<CartScreen> {
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
   final Set<String> selectedProductIds = {};
+
+  final formatCurrency = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
 
   @override
   void initState() {
@@ -222,7 +229,7 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Harga: Rp ${item.product.price.toStringAsFixed(0)}',
+                                      formatCurrency.format(item.product.price),
                                       style: const TextStyle(fontSize: 12),
                                     ),
                                   ],
