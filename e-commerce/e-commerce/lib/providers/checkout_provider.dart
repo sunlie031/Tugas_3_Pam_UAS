@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/checkout.dart';
+import '../models/cart_item.dart';
+import '../providers/product_provider.dart';
 
 class CheckoutProvider with ChangeNotifier {
   final List<Checkout> _history = [];
@@ -93,6 +95,41 @@ class CheckoutProvider with ChangeNotifier {
       onSuccess();
     } catch (e) {
       onError('Gagal melakukan checkout: $e');
+    }
+  }
+
+  Future<void> checkoutFromCart(
+    List<CartItem> cartItems,
+    ProductProvider productProvider,
+  ) async {
+    try {
+      final List<CheckoutItem> checkoutItems =
+          cartItems.map((cartItem) {
+            final product = productProvider.getById(cartItem.product.id);
+            return CheckoutItem(
+              productId: product.id,
+              productName: product.name,
+              productPrice: product.price,
+              productImage: product.image,
+              quantity: cartItem.quantity,
+            );
+          }).toList();
+
+      final newCheckout = Checkout(
+        items: checkoutItems,
+        timestamp: DateTime.now(),
+      );
+
+      if (!_isDuplicateCheckout(newCheckout)) {
+        _history.add(newCheckout);
+        await _saveHistory();
+        notifyListeners();
+        print("Checkout dari keranjang berhasil disimpan");
+      } else {
+        print("Checkout dari keranjang dibatalkan: terdeteksi duplikat");
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

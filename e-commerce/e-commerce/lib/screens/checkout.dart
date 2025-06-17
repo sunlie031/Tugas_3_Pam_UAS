@@ -8,14 +8,24 @@ import '../providers/product_provider.dart';
 import '../providers/checkout_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  final Product product;
+  final Product? product;
   final int quantity;
+  final List<CheckoutItem>? checkoutItems;
+  final bool isReview;
 
   const CheckoutScreen({
     Key? key,
     required this.product,
     required this.quantity,
-  }) : super(key: key);
+  }) : checkoutItems = null,
+       isReview = false,
+       super(key: key);
+
+  const CheckoutScreen.review({Key? key, required this.checkoutItems})
+    : product = null,
+      quantity = 0,
+      isReview = true,
+      super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -31,7 +41,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _increaseQuantity() {
-    if (_quantity < widget.product.stock) {
+    if (_quantity < widget.product!.stock) {
       setState(() => _quantity++);
     }
   }
@@ -47,7 +57,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _completeCheckout(BuildContext context) async {
-    if (widget.product.stock <= 0 || _quantity > widget.product.stock) {
+    final product = widget.product!;
+    if (product.stock <= 0 || _quantity > product.stock) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Stok produk tidak mencukupi.')),
       );
@@ -55,21 +66,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     final checkoutItem = CheckoutItem(
-      productId: widget.product.id,
-      productName: widget.product.name,
-      productPrice: widget.product.price,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
       quantity: _quantity,
-      productImage: widget.product.image,
+      productImage: product.image,
     );
 
     try {
-      // Update stok produk
       await Provider.of<ProductProvider>(
         context,
         listen: false,
-      ).updateStockAndSales(widget.product.id, _quantity);
+      ).updateStockAndSales(product.id, _quantity);
 
-      // Proses checkout
       await Provider.of<CheckoutProvider>(
         context,
         listen: false,
@@ -101,20 +110,55 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Terjadi kesalahan saat checkout")),
+        const SnackBar(content: Text("Terjadi kesalahan saat checkout.")),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final product = widget.product;
-    final total = product.price * _quantity;
     final currencyFormat = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
+
+    if (widget.isReview && widget.checkoutItems != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Pembelian')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children:
+              widget.checkoutItems!.map((item) {
+                final total = item.quantity * item.productPrice;
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  leading: Image.network(
+                    item.productImage,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(item.productName),
+                  subtitle: Text('Jumlah: ${item.quantity}'),
+                  trailing: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(currencyFormat.format(item.productPrice)),
+                      Text(
+                        "Total: ${currencyFormat.format(total)}",
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+        ),
+      );
+    }
+
+    final product = widget.product!;
+    final total = product.price * _quantity;
 
     return Scaffold(
       appBar: AppBar(
@@ -149,7 +193,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 if (product.stock <= 0)
                   const Text(
                     "Stok Habis",
-                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
@@ -158,16 +201,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 else
                   Text(
                     "Stok tersedia: ${product.stock}",
-                    textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.grey),
                   ),
                 const SizedBox(height: 8),
                 Text(
                   currencyFormat.format(product.price),
-                  textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 24,
-                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
