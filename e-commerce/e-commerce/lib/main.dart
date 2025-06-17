@@ -1,4 +1,5 @@
 import 'package:catatan_keuangan/providers/cart_provider.dart';
+import 'package:catatan_keuangan/providers/checkout_provider.dart';
 import 'package:catatan_keuangan/providers/product_provider.dart';
 import 'package:catatan_keuangan/providers/profile.provider.dart';
 import 'package:catatan_keuangan/screens/home.dart';
@@ -10,6 +11,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => CheckoutProvider()),
         ChangeNotifierProvider(
           create: (_) {
             final Provider = ProductProvider();

@@ -1,10 +1,13 @@
-import 'package:catatan_keuangan/screens/chekout.dart';
+import 'package:catatan_keuangan/models/checkout.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product.dart';
-import '../providers/product_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/product_provider.dart';
+import '../providers/checkout_provider.dart';
+import '../screens/checkout.dart';
 import 'cart.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -30,6 +33,7 @@ class _ProductDetailState extends State<ProductDetail> {
     _currentImageIndex = 0;
     _searchController = TextEditingController();
     _focusNode = FocusNode();
+    quantity = widget.product.stock > 0 ? 1 : 0;
   }
 
   @override
@@ -42,7 +46,6 @@ class _ProductDetailState extends State<ProductDetail> {
 
   void _showSearchOverlay(String keyword) {
     _hideSearchOverlay();
-
     final provider = Provider.of<ProductProvider>(context, listen: false);
     final results =
         provider.products
@@ -52,48 +55,47 @@ class _ProductDetailState extends State<ProductDetail> {
     if (results.isEmpty || keyword.isEmpty) return;
 
     _searchOverlay = OverlayEntry(
-      builder: (context) {
-        return Positioned(
-          width: MediaQuery.of(context).size.width - 32,
-          top: kToolbarHeight + 12,
-          left: 16,
-          child: CompositedTransformFollower(
-            link: _layerLink,
-            showWhenUnlinked: false,
-            child: Material(
-              elevation: 4,
-              borderRadius: BorderRadius.circular(8),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                shrinkWrap: true,
-                itemCount: results.length,
-                itemBuilder: (context, index) {
-                  final product = results[index];
-                  return ListTile(
-                    leading: Image.network(
-                      product.image,
-                      width: 40,
-                      height: 40,
-                    ),
-                    title: Text(product.name),
-                    onTap: () {
-                      _hideSearchOverlay();
-                      _searchController.clear();
-                      setState(() => _isSearching = false);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductDetail(product: product),
-                        ),
-                      );
-                    },
-                  );
-                },
+      builder:
+          (context) => Positioned(
+            width: MediaQuery.of(context).size.width - 32,
+            top: kToolbarHeight + 12,
+            left: 16,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  shrinkWrap: true,
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final product = results[index];
+                    return ListTile(
+                      leading: Image.network(
+                        product.image,
+                        width: 40,
+                        height: 40,
+                      ),
+                      title: Text(product.name),
+                      onTap: () {
+                        _hideSearchOverlay();
+                        _searchController.clear();
+                        setState(() => _isSearching = false);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProductDetail(product: product),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        );
-      },
     );
 
     Overlay.of(context).insert(_searchOverlay!);
@@ -107,9 +109,15 @@ class _ProductDetailState extends State<ProductDetail> {
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
-    final List<String> images =
+    final images =
         product.subImage.isNotEmpty ? product.subImage : [product.image];
     final displayedImage = images[_currentImageIndex];
+
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -144,9 +152,7 @@ class _ProductDetailState extends State<ProductDetail> {
               color: Colors.black,
             ),
             onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-              });
+              setState(() => _isSearching = !_isSearching);
               if (_isSearching) {
                 FocusScope.of(context).requestFocus(_focusNode);
               } else {
@@ -189,11 +195,9 @@ class _ProductDetailState extends State<ProductDetail> {
                         final imageUrl = entry.value;
                         return Expanded(
                           child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _currentImageIndex = index;
-                              });
-                            },
+                            onTap:
+                                () =>
+                                    setState(() => _currentImageIndex = index),
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 4),
                               decoration: BoxDecoration(
@@ -224,7 +228,7 @@ class _ProductDetailState extends State<ProductDetail> {
             Text(product.name, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text(
-              "Rp ${product.price.toStringAsFixed(0)}",
+              currencyFormatter.format(product.price),
               style: const TextStyle(
                 fontSize: 24,
                 color: Colors.black,
@@ -233,8 +237,13 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Stok: ${product.stock}",
-              style: const TextStyle(fontSize: 14),
+              product.stock == 0 ? "Stok Habis" : "Stok: ${product.stock}",
+              style: TextStyle(
+                fontSize: 14,
+                color: product.stock == 0 ? Colors.red : Colors.black,
+                fontWeight:
+                    product.stock == 0 ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -252,20 +261,17 @@ class _ProductDetailState extends State<ProductDetail> {
                 const Text("Jumlah:", style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 IconButton(
-                  onPressed: () {
-                    if (quantity > 1) {
-                      setState(() => quantity--);
-                    }
-                  },
+                  onPressed:
+                      () =>
+                          setState(() => quantity > 1 ? quantity-- : quantity),
                   icon: const Icon(Icons.indeterminate_check_box_outlined),
                 ),
                 Text('$quantity', style: const TextStyle(fontSize: 14)),
                 IconButton(
-                  onPressed: () {
-                    if (quantity < product.stock) {
-                      setState(() => quantity++);
-                    }
-                  },
+                  onPressed:
+                      product.stock > 0 && quantity < product.stock
+                          ? () => setState(() => quantity++)
+                          : null,
                   icon: const Icon(Icons.add_box_outlined),
                 ),
               ],
@@ -285,41 +291,80 @@ class _ProductDetailState extends State<ProductDetail> {
             Expanded(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                  backgroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                 ),
+                icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
                 label: const Text(
                   "+ Keranjang",
                   style: TextStyle(color: Colors.black),
                 ),
-                icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
-                onPressed: () {
-                  Provider.of<CartProvider>(
-                    context,
-                    listen: false,
-                  ).addToCart(widget.product, quantity: quantity);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Produk ditambahkan ke keranjang"),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
+                onPressed:
+                    product.stock == 0
+                        ? null
+                        : () {
+                          Provider.of<CartProvider>(
+                            context,
+                            listen: false,
+                          ).addToCart(widget.product, quantity: quantity);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Produk ditambahkan ke keranjang"),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                onPressed: () {
-                  Provider.of<CartProvider>(
-                    context,
-                    listen: false,
-                  ).addToCart(widget.product, quantity: quantity);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const CheckoutScreen()),
-                  );
-                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  minimumSize: const Size.fromHeight(40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                onPressed:
+                    product.stock == 0
+                        ? null
+                        : () {
+                          final checkoutItem = CheckoutItem(
+                            productId: product.id,
+                            productName: product.name,
+                            productPrice: product.price,
+                            quantity: quantity,
+                            productImage: product.image,
+                          );
+
+                          Provider.of<CheckoutProvider>(
+                            context,
+                            listen: false,
+                          ).checkoutSingleItem(
+                            checkoutItem: checkoutItem,
+                            onSuccess: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => CheckoutScreen(
+                                        product: widget.product,
+                                        quantity: quantity,
+                                      ),
+                                ),
+                              );
+                            },
+                            onError: (msg) {
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(msg)));
+                            },
+                          );
+                        },
                 child: const Text(
                   "Checkout",
                   style: TextStyle(color: Colors.white),

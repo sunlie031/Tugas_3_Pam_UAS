@@ -93,4 +93,14 @@ class ProductProvider with ChangeNotifier {
 
     return sorted.take(3).toList();
   }
+
+  Future<void> updateStockAndSales(String productId, int quantity) async {
+    final index = _products.indexWhere((p) => p.id == productId);
+    if (index != -1) {
+      _products[index].stock -= quantity;
+      _products[index].sales += quantity;
+      notifyListeners();
+      await _saveProductsToPrefs();
+    }
+  }
 }

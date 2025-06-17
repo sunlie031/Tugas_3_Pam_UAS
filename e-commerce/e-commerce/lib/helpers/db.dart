@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/cart_time.dart';
+import '../models/cart_item.dart';
 
 class CartDB {
   static const String cartKey = 'cart_items';

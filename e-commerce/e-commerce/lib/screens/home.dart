@@ -1,3 +1,4 @@
+import 'package:catatan_keuangan/screens/history.dart';
 import 'package:catatan_keuangan/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     const Placeholder(),
-    const Center(child: Text("Riwayat")),
+    const HistoryScreen(),
     ProfileScreen(),
   ];
 
@@ -332,7 +333,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             Text(
                                               "(${product.rating}) ${product.sales}",
-                                              style: TextStyle(fontSize: 12),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -393,25 +396,17 @@ class _HomeScreenState extends State<HomeScreen> {
               : _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: const Color.fromARGB(255, 2, 2, 2),
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
         selectedFontSize: 12,
         unselectedFontSize: 10,
-        unselectedIconTheme: IconThemeData(size: 16),
-        selectedIconTheme: IconThemeData(size: 20),
+        selectedIconTheme: const IconThemeData(size: 24),
+        unselectedIconTheme: const IconThemeData(size: 20),
         onTap: _onTap,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.black),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history, color: Colors.black),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person, color: Colors.black),
-            label: 'Profil',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );

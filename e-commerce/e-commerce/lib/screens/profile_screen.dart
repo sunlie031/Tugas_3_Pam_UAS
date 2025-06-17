@@ -9,8 +9,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _name = 'Nama Belum Disetel';
-  String _email = 'Email Belum Disetel';
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -21,54 +21,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _name = prefs.getString('user_name') ?? 'Nama Belum Disetel';
-      _email = prefs.getString('user_email') ?? 'Email Belum Disetel';
+      _nameController.text =
+          prefs.getString('user_name') ?? 'Nama Belum Disetel';
+      _emailController.text =
+          prefs.getString('user_email') ?? 'Email Belum Disetel';
     });
   }
 
-  Future<void> _editProfile() async {
-    final nameController = TextEditingController(text: _name);
-    final emailController = TextEditingController(text: _email);
+  Future<void> _saveProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', _nameController.text);
+    await prefs.setString('user_email', _emailController.text);
 
-    await showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Edit Profil"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: "Nama"),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: "Email"),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Batal"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('user_name', nameController.text);
-                  await prefs.setString('user_email', emailController.text);
-                  setState(() {
-                    _name = nameController.text;
-                    _email = emailController.text;
-                  });
-                  Navigator.pop(context);
-                },
-                child: const Text("Simpan"),
-              ),
-            ],
-          ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Profil berhasil disimpan')));
   }
 
   @override
@@ -77,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text("Profil"),
         actions: [
-          IconButton(icon: const Icon(Icons.edit), onPressed: _editProfile),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveProfile),
         ],
       ),
       body: Padding(
@@ -100,13 +67,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     "Nama:",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text(_name),
+                  TextField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      hintText: "Masukkan nama",
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     "Email:",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text(_email),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      hintText: "Masukkan email",
+                    ),
+                  ),
                 ],
               ),
             ),

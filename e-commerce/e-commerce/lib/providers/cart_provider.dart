@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/cart_time.dart';
+import '../models/cart_item.dart';
 import '../models/product.dart';
 import '../helpers/db.dart';
 
@@ -31,18 +31,6 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  double get totalPrice =>
-      _items.fold(0, (sum, item) => sum + item.product.price * item.quantity);
-
-  Future<void> loadCartFromPrefs() async {
-    _items = await CartDB.loadCartItems();
-    notifyListeners();
-  }
-
-  void saveCartToPrefs() {
-    CartDB.saveCartItems(_items);
-  }
-
   void updateQuantity(String productId, int newQuantity) {
     final index = _items.indexWhere((item) => item.product.id == productId);
     if (index != -1) {
@@ -50,5 +38,17 @@ class CartProvider with ChangeNotifier {
       saveCartToPrefs();
       notifyListeners();
     }
+  }
+
+  double get totalPrice =>
+      _items.fold(0, (sum, item) => sum + item.product.price * item.quantity);
+
+  void saveCartToPrefs() {
+    CartDB.saveCartItems(_items);
+  }
+
+  Future<void> loadCartFromPrefs() async {
+    _items = await CartDB.loadCartItems();
+    notifyListeners();
   }
 }
