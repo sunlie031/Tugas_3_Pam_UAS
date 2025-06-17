@@ -7,19 +7,36 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => CheckoutProvider()),
         ChangeNotifierProvider(
           create: (_) {
-            final Provider = ProductProvider();
-            Provider.loadProducts();
-            return Provider;
+            final cartProvider = CartProvider();
+            cartProvider.loadCartFromPrefs();
+            return cartProvider;
           },
         ),
+
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+
+        ChangeNotifierProvider(
+          create: (_) {
+            final productProvider = ProductProvider();
+            productProvider.loadProducts();
+            return productProvider;
+          },
+        ),
+
+        ChangeNotifierProvider(
+          create: (_) {
+            final checkoutProvider = CheckoutProvider();
+            checkoutProvider.loadHistory();
+            return checkoutProvider;
+          },
+        ),
       ],
       child: const MyApp(),
     ),

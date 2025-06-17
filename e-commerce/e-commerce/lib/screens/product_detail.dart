@@ -1,4 +1,3 @@
-import 'package:catatan_keuangan/models/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
-import '../providers/checkout_provider.dart';
 import '../screens/checkout.dart';
 import 'cart.dart';
 
@@ -320,6 +318,7 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
             ),
             const SizedBox(width: 12),
+            // Ganti bagian tombol "Checkout" di bottomNavigationBar:
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -333,36 +332,15 @@ class _ProductDetailState extends State<ProductDetail> {
                     product.stock == 0
                         ? null
                         : () {
-                          final checkoutItem = CheckoutItem(
-                            productId: product.id,
-                            productName: product.name,
-                            productPrice: product.price,
-                            quantity: quantity,
-                            productImage: product.image,
-                          );
-
-                          Provider.of<CheckoutProvider>(
+                          Navigator.push(
                             context,
-                            listen: false,
-                          ).checkoutSingleItem(
-                            checkoutItem: checkoutItem,
-                            onSuccess: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => CheckoutScreen(
-                                        product: widget.product,
-                                        quantity: quantity,
-                                      ),
-                                ),
-                              );
-                            },
-                            onError: (msg) {
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(SnackBar(content: Text(msg)));
-                            },
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => CheckoutScreen(
+                                    product: widget.product,
+                                    quantity: quantity,
+                                  ),
+                            ),
                           );
                         },
                 child: const Text(
