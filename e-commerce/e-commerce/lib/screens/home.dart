@@ -109,10 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final product = results[index];
                   return ListTile(
-                    leading: Image.network(
+                    leading: Image.asset(
                       product.image,
                       width: 40,
                       height: 40,
+                      fit: BoxFit.cover,
                     ),
                     title: Text(product.name),
                     onTap: () {
@@ -231,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             return Image.asset(
                               adsImages[index],
-                              fit: BoxFit.contain,
+                              fit: BoxFit.cover,
                               width: double.infinity,
                             );
                           },
@@ -252,17 +253,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-
                       GridView.builder(
                         padding: const EdgeInsets.all(12),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              childAspectRatio: 0.65,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.75,
                             ),
                         itemCount: allProducts.length,
                         itemBuilder: (context, index) {

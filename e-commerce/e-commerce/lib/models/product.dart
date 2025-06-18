@@ -54,15 +54,13 @@ final List<Product> dummyProducts = [
     stock: 20,
     rating: 4.3,
     sales: 120,
-    description:
-        'Kaos polos berbahan katun premium yang lembut dan adem, cocok digunakan sehari-hari baik di dalam maupun luar rumah. Desain minimalis dengan jahitan rapi, cocok untuk pria maupun wanita. Tersedia dalam berbagai warna netral yang mudah dipadukan dengan outfit lainnya.',
-    image:
-        'https://down-id.img.susercontent.com/file/id-11134207-7r992-lxbemuqxv7z25a.webp',
+    description: 'Kaos polos berbahan katun premium yang lembut dan adem...',
+    image: 'asset/baju1.webp',
     subImage: [
-      "https://down-id.img.susercontent.com/file/id-11134207-7r992-lxbemuqxv7z25a.webp",
-      "https://down-id.img.susercontent.com/file/id-11134207-7r98x-lnrry2jlpad685",
-      "https://berducdn.com/img/800/bsoai4w7bsoau5pwec_2/Cdu5iPv08TOBLsTcCdDC8vj16xpfI6QvScgUPXyf37uA.jpg",
-      "https://id-test-11.slatic.net/p/06ebd11e46e17a536f575f9cac26ab43.jpg",
+      'asset/baju1.webp',
+      'asset/baju2.jpg',
+      'asset/baju3.jpg',
+      'asset/baju4.jpg',
     ],
   ),
   Product(
@@ -72,15 +70,13 @@ final List<Product> dummyProducts = [
     stock: 15,
     rating: 4.5,
     sales: 69,
-    description:
-        'Celana jeans biru slim fit dengan bahan denim berkualitas tinggi. Nyaman dipakai seharian dan tahan lama, cocok untuk tampilan kasual hingga semi-formal. Potongan fit yang mengikuti bentuk tubuh tanpa mengurangi kenyamanan saat bergerak.',
-    image:
-        'https://down-id.img.susercontent.com/file/97dde8e47ca46f68495746dd808405c0',
+    description: 'Celana jeans biru slim fit dengan bahan denim...',
+    image: 'asset/celana1.jpg',
     subImage: [
-      "https://down-id.img.susercontent.com/file/97dde8e47ca46f68495746dd808405c0",
-      "https://triplejeans.id/cdn/shop/products/94Z858BWD_1.jpg?v=1679647346",
-      "https://www.russ.co.id/cdn/shop/files/ginee_20230418181545139_4787190287_800x.jpg?v=1739795745",
-      "https://media.karousell.com/media/photos/products/2022/7/12/celana_jeans_denim_wanita_cokl_1657614762_16dec64c_progressive",
+      'asset/celana1.jpg',
+      'asset/celana2.webp',
+      'asset/celana3.webp',
+      'asset/celana4.jpg',
     ],
   ),
   Product(
@@ -90,14 +86,13 @@ final List<Product> dummyProducts = [
     stock: 10,
     rating: 4.6,
     sales: 86,
-    description:
-        'Jaket hoodie berbahan fleece tebal yang hangat dan lembut, ideal untuk cuaca dingin atau musim hujan. Dilengkapi dengan penutup kepala dan kantong depan yang fungsional. Desain kasual dan modis, cocok untuk aktivitas luar ruangan atau sekadar bersantai.',
-    image: 'https://i.ebayimg.com/images/g/brYAAeSwUzRoFjD5/s-l960.webp',
+    description: 'Jaket hoodie berbahan fleece tebal yang hangat...',
+    image: 'asset/jaket1.webp',
     subImage: [
-      'https://i.ebayimg.com/images/g/brYAAeSwUzRoFjD5/s-l960.webp',
-      'https://d29c1z66frfv6c.cloudfront.net/pub/media/catalog/product/zoom/7e374c605e9aa9bc8a3b41559f9be79aa3e10d69_xxl-1.jpg',
-      "https://id-test-11.slatic.net/p/ba28687375c2f93ddef5652510fad308.jpg",
-      "https://images.tokopedia.net/img/cache/700/VqbcmM/2022/10/15/20c5e9b1-d220-4226-bae0-884522c7519c.jpg",
+      'asset/jaket1.webp',
+      'asset/jaket2.jpg',
+      'asset/jaket3.jpg',
+      'asset/jaket4.jpg',
     ],
   ),
   Product(
@@ -107,15 +102,13 @@ final List<Product> dummyProducts = [
     stock: 8,
     rating: 4.7,
     sales: 31,
-    description:
-        'Sneakers ringan dengan sol empuk dan bahan breathable yang memberikan kenyamanan maksimal sepanjang hari. Desain trendy cocok untuk gaya kasual, olahraga ringan, atau aktivitas sehari-hari. Dilengkapi dengan sol anti-slip yang aman dan awet.',
-    image:
-        'https://down-id.img.susercontent.com/file/sg-11134201-7rffb-m9sa2jeauzak53@resize_w900_nl.webp',
+    description: 'Sneakers ringan dengan sol empuk dan bahan breathable...',
+    image: 'asset/sepatu1.webp',
     subImage: [
-      'https://down-id.img.susercontent.com/file/sg-11134201-7rffb-m9sa2jeauzak53@resize_w900_nl.webp',
-      "https://down-id.img.susercontent.com/file/sg-11134201-7rbl6-lof5uac16f3wdd.webp",
-      "https://down-id.img.susercontent.com/file/sg-11134201-7rbmd-lof5ubt0zg3ha8.webp",
-      "https://down-id.img.susercontent.com/file/sg-11134201-7rbka-lof5ualgsm67f7.webp",
+      'asset/sepatu1.webp',
+      'asset/sepatu2.webp',
+      'asset/sepatu3.webp',
+      'asset/sepatu4.webp',
     ],
   ),
   Product(
@@ -125,15 +118,13 @@ final List<Product> dummyProducts = [
     stock: 30,
     rating: 4.4,
     sales: 100,
-    description:
-        'Topi kasual unisex berbahan katun twill yang ringan dan nyaman dipakai. Cocok untuk olahraga, jalan-jalan, atau aktivitas outdoor lainnya. Tersedia dalam berbagai warna yang stylish dan mudah dipadupadankan dengan outfit harian Anda.',
-    image:
-        'https://down-id.img.susercontent.com/file/019b044ca37483d08b104bf8d8466b4d.webp',
+    description: 'Topi kasual unisex berbahan katun twill...',
+    image: 'asset/topi1.webp',
     subImage: [
-      "https://down-id.img.susercontent.com/file/019b044ca37483d08b104bf8d8466b4d.webp",
-      'https://down-id.img.susercontent.com/file/id-11134207-7qukx-lf0ua1cfd38t2e.webp',
-      "https://down-id.img.susercontent.com/file/id-11134207-7qukx-lf0ua1cfbood29.webp",
-      "https://down-id.img.susercontent.com/file/dcc9e0c756865f2e1765aa7693bffa3e.webp",
+      'asset/topi1.webp',
+      'asset/topi2.webp',
+      'asset/topi3.webp',
+      'asset/topi4.webp',
     ],
   ),
   Product(
@@ -143,15 +134,13 @@ final List<Product> dummyProducts = [
     stock: 12,
     rating: 4.1,
     sales: 45,
-    description:
-        'Kemeja flanel pria dengan motif kotak-kotak klasik dan bahan lembut yang memberikan kenyamanan ekstra. Cocok digunakan saat cuaca sejuk atau untuk tampilan layering yang kekinian. Bisa dikenakan sebagai outer maupun baju utama.',
-    image:
-        'https://matahari.com/cdn/shop/files/18207942_1.jpg?v=1741834663&width=720',
+    description: 'Kemeja flanel pria dengan motif kotak-kotak klasik...',
+    image: 'asset/kemeja1.webp',
     subImage: [
-      "https://matahari.com/cdn/shop/files/18207942_1.jpg?v=1741834663&width=720",
-      "https://matahari.com/cdn/shop/files/18207942_2.jpg?v=1741834665&width=720",
-      "https://matahari.com/cdn/shop/files/18207942_3.jpg?v=1741834666&width=720",
-      "https://matahari.com/cdn/shop/files/18207942_4.jpg?v=1741834668&width=720",
+      'asset/kemeja1.webp',
+      'asset/kemeja2.webp',
+      'asset/kemeja3.webp',
+      'asset/kemeja4.webp',
     ],
   ),
   Product(
@@ -161,15 +150,13 @@ final List<Product> dummyProducts = [
     stock: 6,
     rating: 4.9,
     sales: 25,
-    description:
-        'Jam tangan analog modern dengan fitur tambahan seperti tanggal dan stopwatch. Desain elegan dengan tali yang kuat dan nyaman di pergelangan tangan. Cocok untuk aktivitas formal maupun kasual, serta tahan terhadap percikan air.',
-    image:
-        'https://down-id.img.susercontent.com/file/654d6f64f8551ad90eab1248699ea856.webp',
+    description: 'Jam tangan analog modern dengan fitur tambahan...',
+    image: 'asset/jam1.webp',
     subImage: [
-      'https://down-id.img.susercontent.com/file/654d6f64f8551ad90eab1248699ea856.webp',
-      "https://down-id.img.susercontent.com/file/3c2042ff6292e563b7a57654b6a37be3.webp",
-      "https://down-id.img.susercontent.com/file/374af2fd9ecceed7fdaee05692dacde7.webp",
-      "https://down-id.img.susercontent.com/file/c9d798cd955a63a49a29f6f43220b07c.webp",
+      'asset/jam1.webp',
+      'asset/jam2.webp',
+      'asset/jam3.webp',
+      'asset/jam4.webp',
     ],
   ),
   Product(
@@ -179,15 +166,13 @@ final List<Product> dummyProducts = [
     stock: 9,
     rating: 4.0,
     sales: 78,
-    description:
-        'Tas ransel berkapasitas besar dengan banyak kompartemen untuk menyimpan laptop, buku, botol minum, dan perlengkapan lainnya. Terbuat dari bahan tahan air yang awet dan ringan. Ideal untuk pelajar, pekerja kantoran, maupun traveler.',
-    image:
-        'https://down-id.img.susercontent.com/file/id-11134207-7r98p-lngwhfepqv9653.webp',
+    description: 'Tas ransel berkapasitas besar dengan banyak kompartemen...',
+    image: 'asset/tas1.webp',
     subImage: [
-      'https://down-id.img.susercontent.com/file/id-11134207-7r98p-lngwhfepqv9653.webp',
-      "https://down-id.img.susercontent.com/file/id-11134207-7qul9-lh47kneo95c331.webp",
-      "https://down-id.img.susercontent.com/file/id-11134207-7qukw-lh47kneo6c772f.webp",
-      "https://down-id.img.susercontent.com/file/id-11134207-7qul8-lh47kneo4xmr11.webp",
+      'asset/tas1.webp',
+      'asset/tas2.webp',
+      'asset/tas3.webp',
+      'asset/tas4.webp',
     ],
   ),
 ];

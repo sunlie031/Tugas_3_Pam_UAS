@@ -65,6 +65,39 @@ flutter:
     - asset/ads_1.png
     - asset/ads_2.png
     - asset/ads_3.png
+    - asset/baju1.webp
+    - asset/baju2.jpg
+    - asset/baju3.jpg
+    - asset/baju4.jpg
+    - asset/celana1.jpg
+    - asset/celana2.webp
+    - asset/celana3.webp
+    - asset/celana4.jpg
+    - asset/jaket1.webp
+    - asset/jaket2.jpg
+    - asset/jaket3.jpg
+    - asset/jaket4.jpg
+    - asset/jam1.webp
+    - asset/jam2.webp
+    - asset/jam3.webp
+    - asset/jam4.webp
+    - asset/kemeja1.webp
+    - asset/kemeja2.webp
+    - asset/kemeja3.webp
+    - asset/kemeja4.webp
+    - asset/sepatu1.webp
+    - asset/sepatu2.webp
+    - asset/sepatu3.webp
+    - asset/sepatu4.webp
+    - asset/tas1.webp
+    - asset/tas2.webp
+    - asset/tas3.webp
+    - asset/tas4.webp
+    - asset/topi1.webp
+    - asset/topi2.webp
+    - asset/topi3.webp
+    - asset/topi4.webp
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

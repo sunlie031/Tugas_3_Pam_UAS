@@ -71,10 +71,11 @@ class _ProductDetailState extends State<ProductDetail> {
                   itemBuilder: (context, index) {
                     final product = results[index];
                     return ListTile(
-                      leading: Image.network(
+                      leading: Image.asset(
                         product.image,
                         width: 40,
                         height: 40,
+                        fit: BoxFit.cover,
                       ),
                       title: Text(product.name),
                       onTap: () {
@@ -110,12 +111,12 @@ class _ProductDetailState extends State<ProductDetail> {
     final images =
         product.subImage.isNotEmpty ? product.subImage : [product.image];
     final displayedImage = images[_currentImageIndex];
-
     final currencyFormatter = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -173,64 +174,77 @@ class _ProductDetailState extends State<ProductDetail> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                displayedImage,
-                height: 270,
-                width: double.infinity,
-                fit: BoxFit.contain,
+            Container(
+              height: screenWidth * 0.6,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            if (images.length > 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  children:
-                      images.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final imageUrl = entry.value;
-                        return Expanded(
-                          child: GestureDetector(
-                            onTap:
-                                () =>
-                                    setState(() => _currentImageIndex = index),
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      _currentImageIndex == index
-                                          ? Colors.deepPurple
-                                          : Colors.transparent,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  imageUrl,
-                                  height: 80,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  displayedImage,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.broken_image, size: 64);
+                  },
                 ),
               ),
-            const SizedBox(height: 8),
-            Text(product.name, style: const TextStyle(fontSize: 18)),
+            ),
+            const SizedBox(height: 12),
+            if (images.length > 1)
+              SizedBox(
+                height: 80,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: images.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () => setState(() => _currentImageIndex = index),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                _currentImageIndex == index
+                                    ? Colors.deepPurple
+                                    : Colors.transparent,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            images[index],
+                            width: 80,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 16),
+            Text(
+              product.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             Text(
               currencyFormatter.format(product.price),
               style: const TextStyle(
                 fontSize: 24,
-                color: Colors.black,
                 fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
@@ -246,10 +260,14 @@ class _ProductDetailState extends State<ProductDetail> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.star, color: Colors.amber),
+                const Icon(Icons.star, color: Colors.amber, size: 20),
+                const SizedBox(width: 4),
                 Text(
-                  "(${product.rating.toString()})",
-                  style: const TextStyle(fontSize: 14),
+                  product.rating.toStringAsFixed(1),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -262,15 +280,15 @@ class _ProductDetailState extends State<ProductDetail> {
                   onPressed:
                       () =>
                           setState(() => quantity > 1 ? quantity-- : quantity),
-                  icon: const Icon(Icons.indeterminate_check_box_outlined),
+                  icon: const Icon(Icons.remove),
                 ),
-                Text('$quantity', style: const TextStyle(fontSize: 14)),
+                Text('$quantity', style: const TextStyle(fontSize: 16)),
                 IconButton(
                   onPressed:
                       product.stock > 0 && quantity < product.stock
                           ? () => setState(() => quantity++)
                           : null,
-                  icon: const Icon(Icons.add_box_outlined),
+                  icon: const Icon(Icons.add),
                 ),
               ],
             ),
@@ -290,9 +308,9 @@ class _ProductDetailState extends State<ProductDetail> {
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(40),
+                  minimumSize: const Size.fromHeight(48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
@@ -322,9 +340,9 @@ class _ProductDetailState extends State<ProductDetail> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
-                  minimumSize: const Size.fromHeight(40),
+                  minimumSize: const Size.fromHeight(48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed:
@@ -344,7 +362,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         },
                 child: const Text(
                   "Checkout",
-                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

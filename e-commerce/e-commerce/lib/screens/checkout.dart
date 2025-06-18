@@ -126,33 +126,44 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (widget.isReview && widget.checkoutItems != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Detail Pembelian')),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children:
-              widget.checkoutItems!.map((item) {
-                final total = item.quantity * item.productPrice;
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                  leading: Image.network(
-                    item.productImage,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(item.productName),
-                  subtitle: Text('Jumlah: ${item.quantity}'),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(currencyFormat.format(item.productPrice)),
-                      Text(
-                        "Total: ${currencyFormat.format(total)}",
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+        body: SafeArea(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: widget.checkoutItems!.length,
+            itemBuilder: (context, index) {
+              final item = widget.checkoutItems![index];
+              final total = item.quantity * item.productPrice;
+
+              return ListTile(
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                leading: Image.network(
+                  item.productImage,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image),
+                ),
+                title: Text(
+                  item.productName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text('Jumlah: ${item.quantity}'),
+                trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(currencyFormat.format(item.productPrice)),
+                    Text(
+                      "Total: ${currencyFormat.format(total)}",
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       );
     }
@@ -164,143 +175,161 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       appBar: AppBar(
         title: const Text('Checkout', style: TextStyle(fontSize: 18)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                product.image,
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  product.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  product.image,
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        height: 250,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image, size: 60),
+                      ),
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return SizedBox(
+                      height: 250,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value:
+                              progress.expectedTotalBytes != null
+                                  ? progress.cumulativeBytesLoaded /
+                                      (progress.expectedTotalBytes!)
+                                  : null,
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 4),
-                if (product.stock <= 0)
-                  const Text(
-                    "Stok Habis",
+              ),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    product.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.stock <= 0
+                        ? "Stok Habis"
+                        : "Stok tersedia: ${product.stock}",
                     style: TextStyle(
-                      color: Colors.red,
+                      color: product.stock <= 0 ? Colors.red : Colors.grey,
+                      fontWeight:
+                          product.stock <= 0
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    currencyFormat.format(product.price),
+                    style: const TextStyle(
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
-                  )
-                else
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Jumlah:", style: TextStyle(fontSize: 16)),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle_outline),
+                        onPressed: _decreaseQuantity,
+                      ),
+                      Text('$_quantity', style: const TextStyle(fontSize: 16)),
+                      IconButton(
+                        icon: const Icon(Icons.add_circle_outline),
+                        onPressed: _increaseQuantity,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Total",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   Text(
-                    "Stok tersedia: ${product.stock}",
-                    style: const TextStyle(color: Colors.grey),
+                    currencyFormat.format(total),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                const SizedBox(height: 8),
-                Text(
-                  currencyFormat.format(product.price),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _cancelCheckout,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        side: const BorderSide(color: Colors.black),
+                      ),
+                      child: const Text(
+                        "Batal",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Jumlah:", style: TextStyle(fontSize: 16)),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
-                      onPressed: _decreaseQuantity,
-                    ),
-                    Text('$_quantity', style: const TextStyle(fontSize: 16)),
-                    IconButton(
-                      icon: const Icon(Icons.add_circle_outline),
-                      onPressed: _increaseQuantity,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const Spacer(),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Total",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      currencyFormat.format(total),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _cancelCheckout,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(45),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        child: const Text(
-                          "Batal",
-                          style: TextStyle(color: Colors.black),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed:
+                          (_quantity > 0 &&
+                                  product.stock > 0 &&
+                                  _quantity <= product.stock)
+                              ? () => _completeCheckout(context)
+                              : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        minimumSize: const Size.fromHeight(45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed:
-                            (_quantity > 0 &&
-                                    product.stock > 0 &&
-                                    _quantity <= product.stock)
-                                ? () => _completeCheckout(context)
-                                : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          minimumSize: const Size.fromHeight(45),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        child: const Text(
-                          "Beli Sekarang",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                      child: const Text(
+                        "Beli Sekarang",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

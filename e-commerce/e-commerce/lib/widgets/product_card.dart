@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/product.dart';
-import '../screens/product_detail.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -10,76 +8,61 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatCurrency = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    );
-
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetail(product: product),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3)],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child:
-                    product.image.startsWith("http")
-                        ? Image.network(
-                          product.image,
-                          width: 130,
-                          fit: BoxFit.contain,
-                        )
-                        : Image.asset(
-                          product.image,
-                          width: 130,
-                          fit: BoxFit.contain,
-                        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(blurRadius: 6, color: Colors.black12, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Gambar produk
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
+              child: Image.asset(
+                product.image,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
-
-            const SizedBox(height: 4),
-            Text(
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Text(
               product.name,
-              style: const TextStyle(fontSize: 12),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-            Text(
-              formatCurrency.format(product.price),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Rp ${product.price.toStringAsFixed(0)}',
+              style: const TextStyle(color: Colors.green),
             ),
-            Row(
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
               children: [
-                const Icon(Icons.star, color: Colors.amber, size: 14),
+                const Icon(Icons.star, size: 14, color: Colors.orange),
+                const SizedBox(width: 4),
                 Text(
-                  "(${product.rating}) ${product.sales}",
+                  product.rating.toStringAsFixed(1),
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+        ],
       ),
     );
   }
