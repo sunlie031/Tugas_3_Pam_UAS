@@ -42,16 +42,17 @@ class ProductCard extends StatelessWidget {
                     product.image.startsWith("http")
                         ? Image.network(
                           product.image,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                          width: 130,
+                          fit: BoxFit.contain,
                         )
                         : Image.asset(
                           product.image,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                          width: 130,
+                          fit: BoxFit.contain,
                         ),
               ),
             ),
+
             const SizedBox(height: 4),
             Text(
               product.name,

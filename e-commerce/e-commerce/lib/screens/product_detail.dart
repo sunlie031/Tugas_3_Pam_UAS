@@ -318,7 +318,6 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
             ),
             const SizedBox(width: 12),
-            // Ganti bagian tombol "Checkout" di bottomNavigationBar:
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -345,7 +344,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         },
                 child: const Text(
                   "Checkout",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                 ),
               ),
             ),

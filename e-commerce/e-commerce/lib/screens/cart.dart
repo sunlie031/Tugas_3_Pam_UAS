@@ -306,7 +306,8 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                             Text(
-                              'Rp ${total.toStringAsFixed(0)}',
+                              formatCurrency.format(total),
+
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

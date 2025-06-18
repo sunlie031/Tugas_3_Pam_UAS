@@ -1,13 +1,13 @@
-import 'package:catatan_keuangan/screens/history.dart';
-import 'package:catatan_keuangan/screens/profile_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
+import '../widgets/featured_product.dart';
 import 'cart.dart';
+import 'history.dart';
 import 'product_detail.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,11 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const Placeholder(),
-    const HistoryScreen(),
-    ProfileScreen(),
-  ];
+  final List<Widget> _pages = [const Placeholder(), const HistoryScreen()];
 
   final formatCurrency = NumberFormat.currency(
     locale: 'id_ID',
@@ -65,10 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _startAdsAutoScroll() {
     _adsTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (_adsController.hasClients) {
-        _currentAdIndex++;
-        if (_currentAdIndex >= adsImages.length) {
-          _currentAdIndex = 0;
-        }
+        _currentAdIndex = (_currentAdIndex + 1) % adsImages.length;
         _adsController.animateToPage(
           _currentAdIndex,
           duration: const Duration(milliseconds: 500),
@@ -201,9 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.black,
             ),
             onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-              });
+              setState(() => _isSearching = !_isSearching);
               if (_isSearching) {
                 FocusScope.of(context).requestFocus(_focusNode);
               } else {
@@ -240,125 +231,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             return Image.asset(
                               adsImages[index],
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                               width: double.infinity,
                             );
                           },
                         ),
                       ),
                       const SizedBox(height: 16),
-                      if (featured.isNotEmpty) ...[
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Center(
-                            child: Text(
-                              "Produk Unggulan",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          height: 300,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            itemCount: featured.length,
-                            itemBuilder: (context, index) {
-                              final product = featured[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) =>
-                                              ProductDetail(product: product),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  width: 150,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 4,
-                                        offset: Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            const BorderRadius.vertical(
-                                              top: Radius.circular(12),
-                                            ),
-                                        child: Image.network(
-                                          product.image,
-                                          height: 200,
-                                          width: 150,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          product.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        child: Text(
-                                          formatCurrency.format(product.price),
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
-                                              size: 14,
-                                            ),
-                                            Text(
-                                              "(${product.rating}) ${product.sales}",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                      FeaturedProducts(products: featured),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 12.0),
                         child: Center(
@@ -372,6 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
+
                       GridView.builder(
                         padding: const EdgeInsets.all(12),
                         shrinkWrap: true,
@@ -417,7 +298,6 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );

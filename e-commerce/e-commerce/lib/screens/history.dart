@@ -18,7 +18,10 @@ class HistoryScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Riwayat Pembelian'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Riwayat', style: TextStyle(fontSize: 18)),
+        centerTitle: true,
+      ),
       body:
           history.isEmpty
               ? const Center(
@@ -91,7 +94,7 @@ class HistoryScreen extends StatelessWidget {
                                           item.productName,
                                           style: const TextStyle(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         const SizedBox(height: 4),

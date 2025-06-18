@@ -42,11 +42,24 @@ class CartProvider with ChangeNotifier {
 
     final index = _items.indexWhere((item) => item.product.id == product.id);
     if (index >= 0) {
-      _items[index].quantity += quantity;
+      final newQty = _items[index].quantity + quantity;
+      if (newQty > product.stock) {
+        debugPrint(
+          'Jumlah melebihi stok (${product.stock}) untuk produk ${product.name}',
+        );
+        return;
+      }
+      _items[index].quantity = newQty;
       debugPrint(
         'Jumlah produk "${product.name}" diperbarui menjadi ${_items[index].quantity}',
       );
     } else {
+      if (quantity > product.stock) {
+        debugPrint(
+          'Jumlah awal melebihi stok (${product.stock}) untuk produk ${product.name}',
+        );
+        return;
+      }
       _items.add(CartItem(product: product, quantity: quantity));
       debugPrint('Produk "${product.name}" ditambahkan ke keranjang');
     }
@@ -73,6 +86,14 @@ class CartProvider with ChangeNotifier {
 
     final index = _items.indexWhere((item) => item.product.id == productId);
     if (index != -1) {
+      final stock = _items[index].product.stock;
+      if (newQuantity > stock) {
+        debugPrint(
+          'Jumlah melebihi stok (${stock}) untuk produk ${_items[index].product.name}',
+        );
+        return;
+      }
+
       _items[index].quantity = newQuantity;
       debugPrint(
         'Jumlah produk "${_items[index].product.name}" diubah menjadi $newQuantity',
@@ -87,11 +108,28 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> checkout(Function(String, int) updateStockAndSales) async {
+  Future<bool> checkout(
+    Function(String productId, int quantity) updateStockAndSales, {
+    required Function(String errorMessage) onError,
+  }) async {
+    await _ensureCartLoaded();
+
+    for (final item in _items) {
+      final stock = item.product.stock;
+      if (item.quantity > stock) {
+        onError(
+          'Jumlah produk "${item.product.name}" melebihi stok tersedia ($stock)',
+        );
+        return false;
+      }
+    }
+
     for (final item in _items) {
       updateStockAndSales(item.product.id, item.quantity);
     }
+
     await clearCart();
     debugPrint('Checkout berhasil. Stok diperbarui dan keranjang dikosongkan.');
+    return true;
   }
 }
