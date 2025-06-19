@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   OverlayEntry? _searchOverlay;
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
-
   final List<String> adsImages = [
     "asset/ads_1.png",
     "asset/ads_2.png",
@@ -110,14 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final product = results[index];
                   return ListTile(
-                    leading: Image.asset(
+                    leading: Image.network(
                       product.image,
                       width: 40,
                       height: 40,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image),
                     ),
                     title: Text(product.name),
                     onTap: () {
@@ -236,12 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             return Image.asset(
                               adsImages[index],
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                               width: double.infinity,
-                              errorBuilder:
-                                  (context, error, stackTrace) => const Center(
-                                    child: Icon(Icons.broken_image, size: 80),
-                                  ),
                             );
                           },
                         ),
@@ -261,16 +252,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
+
                       GridView.builder(
                         padding: const EdgeInsets.all(12),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio: 0.75,
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: 0.65,
                             ),
                         itemCount: allProducts.length,
                         itemBuilder: (context, index) {

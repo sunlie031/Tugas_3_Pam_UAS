@@ -19,7 +19,6 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gambar produk
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(
