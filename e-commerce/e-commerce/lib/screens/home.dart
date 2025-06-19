@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   OverlayEntry? _searchOverlay;
   bool _isSearching = false;
   final LayerLink _layerLink = LayerLink();
+
   final List<String> adsImages = [
     "asset/ads_1.png",
     "asset/ads_2.png",
@@ -114,6 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
+                      errorBuilder:
+                          (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image),
                     ),
                     title: Text(product.name),
                     onTap: () {
@@ -234,6 +238,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               adsImages[index],
                               fit: BoxFit.cover,
                               width: double.infinity,
+                              errorBuilder:
+                                  (context, error, stackTrace) => const Center(
+                                    child: Icon(Icons.broken_image, size: 80),
+                                  ),
                             );
                           },
                         ),

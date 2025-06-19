@@ -72,14 +72,11 @@ class _CartScreenState extends State<CartScreen> {
                 itemBuilder: (context, index) {
                   final product = results[index];
                   return ListTile(
-                    leading: Image.network(
+                    leading: Image.asset(
                       product.image,
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image),
                     ),
                     title: Text(product.name, overflow: TextOverflow.ellipsis),
                     onTap: () {
@@ -125,8 +122,7 @@ class _CartScreenState extends State<CartScreen> {
             _isSearching
                 ? CompositedTransformTarget(
                   link: _layerLink,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
+                  child: Container(
                     height: 40,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -179,7 +175,7 @@ class _CartScreenState extends State<CartScreen> {
                       child: ListView.separated(
                         itemCount: cartItems.length,
                         separatorBuilder:
-                            (context, index) => const Divider(
+                            (_, __) => const Divider(
                               thickness: 1,
                               indent: 16,
                               endIndent: 16,
@@ -213,32 +209,11 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
+                                  child: Image.asset(
                                     item.product.image,
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              width: 60,
-                                              height: 60,
-                                              color: Colors.grey[300],
-                                              child: const Icon(
-                                                Icons.broken_image_rounded,
-                                              ),
-                                            ),
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Container(
-                                        width: 60,
-                                        height: 60,
-                                        alignment: Alignment.center,
-                                        child: const CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      );
-                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -266,43 +241,48 @@ class _CartScreenState extends State<CartScreen> {
                                     ],
                                   ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                Column(
                                   children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.remove_circle_outline,
+                                          ),
+                                          onPressed: () {
+                                            if (item.quantity > 1) {
+                                              cartProvider.updateQuantity(
+                                                item.product.id,
+                                                item.quantity - 1,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        Text(
+                                          '${item.quantity}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.add_circle_outline,
+                                          ),
+                                          onPressed: () {
+                                            cartProvider.updateQuantity(
+                                              item.product.id,
+                                              item.quantity + 1,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                     IconButton(
                                       icon: const Icon(
-                                        Icons.remove_circle_outline,
+                                        Icons.delete_outline,
+                                        color: Colors.red,
                                       ),
-                                      onPressed: () {
-                                        if (item.quantity > 1) {
-                                          cartProvider.updateQuantity(
-                                            item.product.id,
-                                            item.quantity - 1,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    Text(
-                                      '${item.quantity}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.add_circle_outline,
-                                      ),
-                                      onPressed: () {
-                                        cartProvider.updateQuantity(
-                                          item.product.id,
-                                          item.quantity + 1,
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline),
-                                      color: Colors.red,
                                       onPressed: () {
                                         cartProvider.removeFromCart(
                                           item.product.id,
@@ -346,7 +326,6 @@ class _CartScreenState extends State<CartScreen> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
                                 ),
                               ),
                             ],

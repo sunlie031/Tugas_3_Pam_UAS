@@ -136,7 +136,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                leading: Image.network(
+                leading: Image.asset(
                   item.productImage,
                   width: 50,
                   height: 50,
@@ -170,6 +170,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     final product = widget.product!;
     final total = product.price * _quantity;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -179,73 +180,52 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
+                child: Image.asset(
                   product.image,
-                  height: 250,
+                  height: screenWidth * 0.6,
                   width: double.infinity,
                   fit: BoxFit.contain,
                   errorBuilder:
                       (context, error, stackTrace) => Container(
-                        height: 250,
+                        height: screenWidth * 0.6,
                         color: Colors.grey[300],
                         child: const Icon(Icons.broken_image, size: 60),
                       ),
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return SizedBox(
-                      height: 250,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value:
-                              progress.expectedTotalBytes != null
-                                  ? progress.cumulativeBytesLoaded /
-                                      (progress.expectedTotalBytes!)
-                                  : null,
-                        ),
-                      ),
-                    );
-                  },
                 ),
               ),
               const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    product.name,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    product.stock <= 0
-                        ? "Stok Habis"
-                        : "Stok tersedia: ${product.stock}",
-                    style: TextStyle(
-                      color: product.stock <= 0 ? Colors.red : Colors.grey,
-                      fontWeight:
-                          product.stock <= 0
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    currencyFormat.format(product.price),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              Text(
+                product.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                product.stock <= 0
+                    ? "Stok Habis"
+                    : "Stok tersedia: ${product.stock}",
+                style: TextStyle(
+                  color: product.stock <= 0 ? Colors.red : Colors.grey,
+                  fontWeight:
+                      product.stock <= 0 ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                currencyFormat.format(product.price),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               Row(

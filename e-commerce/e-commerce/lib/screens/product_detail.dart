@@ -76,6 +76,9 @@ class _ProductDetailState extends State<ProductDetail> {
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                const Icon(Icons.image_not_supported),
                       ),
                       title: Text(product.name),
                       onTap: () {
@@ -188,13 +191,13 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(
+                child: Image.asset(
                   displayedImage,
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, size: 64);
-                  },
+                  errorBuilder:
+                      (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image, size: 64),
                 ),
               ),
             ),
@@ -222,10 +225,13 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
+                          child: Image.asset(
                             images[index],
                             width: 80,
                             fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image),
                           ),
                         ),
                       ),
